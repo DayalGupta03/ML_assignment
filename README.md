@@ -45,6 +45,8 @@ python inference.py --variant var2
 
 Current selections: VAR1 degree-5 Lasso with `StandardScaler` (`alpha=0.006`); VAR2 degree-10 Ridge without scaling (`alpha=0.1`). Inference refits each exact pipeline on all training rows and predicts the matching test rows.
 
+For convenience, `solve_var1.py` and `solve_var2.py` are compatibility entry points that call the corresponding final inference pipeline. They do not run the old OLS degree sweep. The original split-validation OLS scripts are retained under `legacy_ols/`; they write only into `legacy_ols/predictions/` and are not the final submission workflow. The earlier separate PDFs are archived in `old_reports/`; `BT2024167_Report.pdf` is the current report.
+
 ## Current nested-CV estimates
 
 These are outer-fold cross-validation estimates, not hidden-test scores. The original plain-OLS baselines use degree 4 for VAR1 and degree 8 for VAR2, evaluated with the same nested-CV folds.

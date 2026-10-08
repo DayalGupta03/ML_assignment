@@ -34,18 +34,13 @@ def make_estimator(config):
     raise ValueError(f"Unknown model family: {family}")
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--variant", choices=CONFIG, required=True)
-    parser.add_argument("--data-dir", type=Path, default=Path("BT2024167"))
-    parser.add_argument("--output", type=Path, default=None)
-    args = parser.parse_args()
-
-    variant = args.variant
+def run_variant(variant: str, data_dir: Path = Path("BT2024167"), output: Path | None = None):
+    if variant not in CONFIG:
+        raise ValueError(f"Unknown variant: {variant}")
     config = CONFIG[variant]
-    train_path = args.data_dir / f"BT2024167_train_{variant}.csv"
-    test_path = args.data_dir / f"BT2024167_test_{variant}.csv"
-    output_path = args.output or Path(f"BT2024167_pred_{variant}.csv")
+    train_path = data_dir / f"BT2024167_train_{variant}.csv"
+    test_path = data_dir / f"BT2024167_test_{variant}.csv"
+    output_path = output or Path(f"BT2024167_pred_{variant}.csv")
 
     train = pd.read_csv(train_path)
     test = pd.read_csv(test_path)
@@ -75,6 +70,16 @@ def main() -> None:
           f"scaled: {config['scaled']}; alpha: {config['alpha']}")
     print(f"Wrote {len(submission)} predictions to {output_path}")
     print(f"Columns: {submission.columns.tolist()}; NaN count: {int(submission.isna().sum().sum())}")
+    return submission
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--variant", choices=CONFIG, required=True)
+    parser.add_argument("--data-dir", type=Path, default=Path("BT2024167"))
+    parser.add_argument("--output", type=Path, default=None)
+    args = parser.parse_args()
+    run_variant(args.variant, args.data_dir, args.output)
 
 
 if __name__ == "__main__":
