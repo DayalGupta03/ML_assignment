@@ -1,0 +1,30 @@
+{
+  "var1": {
+    "degree": 5,
+    "model": "Lasso",
+    "scaled": true,
+    "alpha": 0.006,
+    "l1_ratio": null,
+    "outer_cv_mse_mean": 0.34909208672845365,
+    "outer_cv_mse_std": 0.0384053183317722,
+    "outer_cv_r2_mean": 0.963107652256201,
+    "outer_cv_r2_std": 0.00723978587759522,
+    "best_nested_mse": 0.3347131865792896,
+    "one_se_threshold": 0.020196582886918456,
+    "final_nonzero_coefficients": 150
+  },
+  "var2": {
+    "degree": 10,
+    "model": "Ridge",
+    "scaled": false,
+    "alpha": 0.1,
+    "l1_ratio": null,
+    "outer_cv_mse_mean": 0.23292243028187434,
+    "outer_cv_mse_std": 0.013422782694117561,
+    "outer_cv_r2_mean": 0.994256362797594,
+    "outer_cv_r2_std": 0.0018169800170921302,
+    "best_nested_mse": 0.23270634909262836,
+    "one_se_threshold": 0.00685264130041256,
+    "final_nonzero_coefficients": 285
+  }
+}

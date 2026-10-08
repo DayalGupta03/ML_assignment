@@ -1,0 +1,22 @@
+{
+  "var1": {
+    "selected_model": "Lasso",
+    "selected_degree": 5,
+    "nested_cv_mse": 0.34909208672845365,
+    "nested_cv_r2": 0.963107652256201,
+    "ols_baseline_degree": 4,
+    "ols_baseline_nested_cv_mse": 0.7717420262382,
+    "ols_baseline_nested_cv_r2": 0.9184593947161457,
+    "mse_reduction_percent_vs_ols": 54.765702156965915
+  },
+  "var2": {
+    "selected_model": "Ridge",
+    "selected_degree": 10,
+    "nested_cv_mse": 0.23292243028187434,
+    "nested_cv_r2": 0.994256362797594,
+    "ols_baseline_degree": 8,
+    "ols_baseline_nested_cv_mse": 0.25559947126811794,
+    "ols_baseline_nested_cv_r2": 0.9937278081583049,
+    "mse_reduction_percent_vs_ols": 8.872100115753332
+  }
+}
