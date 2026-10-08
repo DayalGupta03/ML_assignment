@@ -1,4 +1,4 @@
-"""Nested-CV model comparison, final fitting, figures, and report for VAR1/VAR2."""
+"""Compare polynomial models and build final predictions and report."""
 from __future__ import annotations
 
 import json
@@ -103,7 +103,7 @@ def _alpha_candidates(family):
 
 
 def tune_inner(x, y, degree, family, scaled, splits):
-    """Select alpha using inner folds; every scaler is fit inside its fold."""
+    """Pick alpha with inner folds, fitting the scaler separately in each fold."""
     if family == "OLS":
         return None, None, None, []
     candidates = _alpha_candidates(family)
@@ -113,7 +113,7 @@ def tune_inner(x, y, degree, family, scaled, splits):
         xtr, xva = x.iloc[tr], x.iloc[va]
         ytr, yva = y.iloc[tr], y.iloc[va]
         a_fit, a_val, _, _ = transformed(xtr, xva, degree, scaled)
-        # Warm-start the coordinate-descent path from stronger to weaker penalty.
+        # Start with stronger regularization and use those coefficients as a warm start.
         if family in {"Lasso", "ElasticNet"}:
             groups = [None] if family == "Lasso" else L1_RATIOS
             for ratio in groups:
@@ -204,7 +204,7 @@ def nested_evaluate(x, y, degrees, variant):
 
 
 def simplicity_key(row):
-    # Degree controls the polynomial basis size; sparsity breaks same-degree ties.
+    # Prefer the simpler degree when CV scores are close; then prefer fewer terms.
     return (int(row.degree), float(row.mean_nonzero_coefficients),
             {"Lasso": 0, "ElasticNet": 1, "Ridge": 2, "OLS": 3}[row.model],
             bool(row.scaled))
@@ -340,8 +340,7 @@ def make_figures(variant, results, chosen, oof_predictions, train, test):
         fig.savefig(FIGURES_DIR / "var1_lasso_nonzero_coefficients.png", dpi=300)
         plt.close(fig)
     else:
-        # Compare full-data OLS and Ridge at degree 14, with Ridge alpha tuned
-        # exclusively by five-fold CV on training data.
+        # Compare degree-14 OLS and Ridge; choose Ridge alpha using training data only.
         feats = CONFIG[variant]["features"]
         deg = max(CONFIG[variant]["degrees"])
         x = train[feats]
@@ -367,7 +366,7 @@ def make_figures(variant, results, chosen, oof_predictions, train, test):
         fig.savefig(FIGURES_DIR / "var2_high_degree_coefficients.png", dpi=300)
         plt.close(fig)
 
-        # High-degree OLS instability diagnostic, entirely within training data.
+        # Check whether high-degree OLS is numerically unstable on the training data.
         xtr, xva, ytr, yva = train_test_split(x, train.y, test_size=.2, random_state=42)
         degrees = list(range(1, 21))
         losses, ranks, ratios = [], [], []
@@ -514,7 +513,7 @@ def main():
         outpath = ROOT / f"BT2024167_pred_{variant}.csv"
         pd.DataFrame({"y": predictions}).to_csv(outpath, index=False)
 
-        # Original plain-OLS selections are retained as the comparison baseline.
+        # Keep the original OLS choices as a baseline for comparison.
         baseline_degree = 4 if variant == "var1" else 8
         baseline = results[(results.degree == baseline_degree) & (results.model == "OLS")].iloc[0]
         baseline_by_variant[variant] = baseline
@@ -557,7 +556,7 @@ def main():
                    "mse_reduction_percent_vs_ols": float(100*(b.cv_mse_mean-r.cv_mse_mean)/b.cv_mse_mean)}
     (RESULTS_DIR / "model_comparison.json").write_text(json.dumps(comp, indent=2))
 
-    # Compare new submissions with archived predictions without using labels.
+    # Compare predictions with the archived files; no test labels are used.
     pred_comparison = {}
     for v in ("var1", "var2"):
         new = pd.read_csv(ROOT / f"BT2024167_pred_{v}.csv").y.to_numpy()
@@ -580,7 +579,7 @@ def main():
     (RESULTS_DIR / "prediction_comparison.json").write_text(json.dumps(pred_comparison, indent=2))
 
     make_report(summaries, results_by_variant, selected_by_variant, baseline_by_variant, instability)
-    # The originals were copied above; remove their old root names so one report remains.
+    # Keep the old reports in the archive and leave the combined report in the root.
     for v in CONFIG:
         old_report = ROOT / f"BT2024167_{v.upper()}_Report.pdf"
         if old_report.exists():

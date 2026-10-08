@@ -1,4 +1,4 @@
-"""Refit a selected VAR1/VAR2 polynomial model and write its predictions."""
+"""Fit the chosen polynomial model and save test predictions."""
 from __future__ import annotations
 
 import argparse

@@ -1,8 +1,4 @@
-"""Compatibility entry point for the selected VAR1 inference pipeline.
-
-Use train_final.py for the full nested-CV search. This script only regenerates
-the final submission using the selected configuration in inference.py.
-"""
+"""Generate the final VAR1 predictions."""
 from inference import run_variant
 
 
