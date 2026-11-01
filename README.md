@@ -25,14 +25,14 @@ Run from the repository root:
 python train_final.py
 ```
 
-The script archives the previous submissions under `old_predictions/` and previous separate reports under `old_reports/`. It compares OLS, Ridge, Lasso, and ElasticNet using degree ranges 2–7 for VAR1 and 6–14 for VAR2. Regularized models are evaluated with and without `StandardScaler`. Five-fold outer CV (`random_state=7`) estimates generalization; three-fold inner CV selects alpha (and ElasticNet `l1_ratio`). A one-standard-error rule favors lower-degree and sparser configurations. The selected pipeline is refit on all training rows before test predictions are generated.
+The script runs nested cross-validation to compare OLS, Ridge, Lasso, and ElasticNet across polynomial degree ranges 2–7 for VAR1 and 6–14 for VAR2. Regularized models are evaluated both with and without `StandardScaler`. Five-fold outer CV (`random_state=7`) estimates generalization error; three-fold inner CV selects the regularization hyperparameter alpha (and ElasticNet `l1_ratio`). A one-standard-error rule favors lower-degree and sparser configurations. The selected pipeline is refit on all training rows before test predictions are generated.
 
 Outputs:
 
 - `results/`: nested-CV tables, selected configurations, prediction comparison, and VAR2 high-degree stability diagnostics.
 - `figures/`: 300-DPI CV, out-of-fold prediction, residual, sparsity, coefficient, and instability plots.
 - `BT2024167_pred_var1.csv` and `BT2024167_pred_var2.csv`: one-column (`y`) predictions in test-row order.
-- `BT2024167_Report.pdf`: combined report, no more than five pages.
+- `Report_BT2024167.pdf`: combined report (maximum 5 pages).
 
 ## Recreate final predictions without rerunning the search
 
@@ -45,7 +45,7 @@ python inference.py --variant var2
 
 Current selections: VAR1 degree-5 Lasso with `StandardScaler` (`alpha=0.006`); VAR2 degree-10 Ridge without scaling (`alpha=0.1`). Inference refits each exact pipeline on all training rows and predicts the matching test rows.
 
-For convenience, `solve_var1.py` and `solve_var2.py` are compatibility entry points that call the corresponding final inference pipeline. They do not run the old OLS degree sweep. The original split-validation OLS scripts are retained under `legacy_ols/`; they write only into `legacy_ols/predictions/` and are not the final submission workflow. The earlier separate PDFs are archived in `old_reports/`; `BT2024167_Report.pdf` is the current report.
+For convenience, `solve_var1.py` and `solve_var2.py` are entry points that call the corresponding final inference pipeline. `Report_BT2024167.pdf` is the final submitted report.
 
 ## Current nested-CV estimates
 
